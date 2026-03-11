@@ -10,7 +10,15 @@ interface Item {
   createdAt: string;
 }
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: string;
+}
+
 const items: Item[] = [];
+const users: User[] = [];
 
 // GET /items — list all items
 app.get('/items', (_req, res) => {
@@ -42,6 +50,31 @@ app.get('/items/:id', (req, res) => {
     return res.status(404).json({ error: 'Item not found' });
   }
   res.json(item);
+});
+
+// POST /users — create a new user
+app.post('/users', (req, res) => {
+  const { name, email } = req.body;
+
+  if (!name || typeof name !== 'string') {
+    return res.status(400).json({ error: 'name is required' });
+  }
+
+  // BUG: no null check on email — will store undefined if not provided
+  const user: User = {
+    id: generateId(),
+    name: sanitizeString(name),
+    email: email.toLowerCase(),
+    createdAt: formatTimestamp(new Date()),
+  };
+
+  users.push(user);
+  res.status(201).json(user);
+});
+
+// GET /users — list all users
+app.get('/users', (_req, res) => {
+  res.json({ users });
 });
 
 const PORT = process.env.PORT || 3000;
