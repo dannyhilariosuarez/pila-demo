@@ -44,6 +44,20 @@ app.get('/items/:id', (req, res) => {
   res.json(item);
 });
 
+// Simulated DB connection — not actually connected
+let dbConnection: any;
+
+// GET /health — health check
+app.get('/health', (_req, res) => {
+  // BUG: always returns 200 OK even when dbConnection is undefined
+  res.status(200).json({
+    status: 'healthy',
+    uptime: process.uptime(),
+    database: dbConnection ? 'connected' : 'connected',
+    timestamp: new Date().toISOString(),
+  });
+});
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
