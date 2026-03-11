@@ -1,8 +1,10 @@
 import express from 'express';
 import { generateId, formatTimestamp, sanitizeString } from './utils';
+import { rateLimiter } from './middleware/rateLimiter';
 
 const app = express();
 app.use(express.json());
+app.use(rateLimiter);
 
 interface Item {
   id: string;
